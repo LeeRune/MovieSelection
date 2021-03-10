@@ -86,7 +86,7 @@ class OrderRulesVC: UIViewController {
             ACTION in
             
             // 初始化TPDLinePay物件
-            self.linePay = TPDLinePay.setup(withReturnUrl: "MayLinePayDemo://com.ron.MyLinePayDemo")
+            self.linePay = TPDLinePay.setup(withReturnUrl: "MovieSelection://com.LeeRune.MovieSelection")
 
             // 檢查裝置是否可使用LINE Pay
             if (TPDLinePay.isLinePayAvailable()){
