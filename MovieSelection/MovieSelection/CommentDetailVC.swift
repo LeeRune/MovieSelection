@@ -16,17 +16,17 @@ class CommentDetailVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     var ratingStar = [UIButton]()
     var commentStars = 0
     var commentPersons = [
-        Comment(comment: "很棒！", imageName: "a", star: 4),
-        Comment(comment: "爛透了！", imageName: "b", star: 1),
-        Comment(comment: "好看！", imageName: "c", star: 5),
-        Comment(comment: "讚！", imageName: "d", star: 4),
-        Comment(comment: "Good！", imageName: "e", star: 5),
-        Comment(comment: "難看！", imageName: "f", star: 1),
-        Comment(comment: "值得二刷！", imageName: "g", star: 4),
-        Comment(comment: "無聊的電影！", imageName: "h", star: 1),
-        Comment(comment: "男主角好帥！", imageName: "i", star: 5),
-        Comment(comment: "女主角好帥！", imageName: "j", star: 4),
-        Comment(comment: "有夠爛！", imageName: "k", star: 1),
+        Comment(comment: "很棒！", imageName: "a", star: 4, updatetime: "2021-03-10 14:17:44"),
+        Comment(comment: "爛透了！", imageName: "b", star: 1, updatetime: "2021-03-10 14:16:44"),
+        Comment(comment: "好看！", imageName: "c", star: 5, updatetime: "2021-03-10 14:15:44"),
+        Comment(comment: "讚！", imageName: "d", star: 4, updatetime: "2021-03-10 14:14:44"),
+        Comment(comment: "Good！", imageName: "e", star: 5, updatetime: "2021-03-10 14:13:44"),
+        Comment(comment: "難看！", imageName: "f", star: 1, updatetime: "2021-03-10 14:12:44"),
+        Comment(comment: "值得二刷！", imageName: "g", star: 4, updatetime: "2021-03-10 14:11:44"),
+        Comment(comment: "無聊的電影！", imageName: "h", star: 1, updatetime: "2021-03-09 14:18:44"),
+        Comment(comment: "男主角好帥！", imageName: "i", star: 5, updatetime: "2021-03-10 13:18:44"),
+        Comment(comment: "女主角好帥！", imageName: "j", star: 4, updatetime: "2021-03-10 12:18:44"),
+        Comment(comment: "有夠爛！", imageName: "k", star: 1, updatetime: "2021-03-10 11:14:44")
     ]
     let reportRes = ["歧視語言","色情內容","散佈廣告","洩漏劇情","重複留言","攻擊他人","其他原因"]
     var callback: ((Comment) -> Void)?
@@ -98,6 +98,8 @@ class CommentDetailVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "commentPersons", for: indexPath) as! CommentDetailCell
+        commentPersons.sort { $0.updatetime > $1.updatetime
+        }
         let comment = commentPersons[indexPath.row]
         
         cell.commentLabel.text = comment.comment
@@ -135,8 +137,12 @@ class CommentDetailVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         let cancel = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let ok = UIAlertAction(title: "送出", style: .default, handler: { (_) in
-            self.commentPersons.append(Comment(comment: commentAlert.textFields?[0].text ?? "", imageName: "l", star: self.commentStars))
-            self.callback?(Comment(comment: commentAlert.textFields?[0].text ?? "", imageName: "l", star: self.commentStars))
+            let date = Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+            let result = formatter.string(from: date)
+            self.commentPersons.append(Comment(comment: commentAlert.textFields?[0].text ?? "", imageName: "l", star: self.commentStars, updatetime: result))
+            self.callback?(Comment(comment: commentAlert.textFields?[0].text ?? "", imageName: "l", star: self.commentStars, updatetime: result))
             
             //評論後重整tableView
             self.tableView.reloadData()

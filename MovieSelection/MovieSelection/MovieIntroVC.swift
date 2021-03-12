@@ -27,17 +27,17 @@ class MovieIntroVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     var movieOverview: String?
     var backdrop_path: String?
     var commentPersons = [
-        Comment(comment: "很棒！", imageName: "a", star: 4),
-        Comment(comment: "爛透了！", imageName: "b", star: 1),
-        Comment(comment: "好看！", imageName: "c", star: 5),
-        Comment(comment: "讚！", imageName: "d", star: 4),
-        Comment(comment: "Good！", imageName: "e", star: 5),
-        Comment(comment: "難看！", imageName: "f", star: 1),
-        Comment(comment: "值得二刷！", imageName: "g", star: 4),
-        Comment(comment: "無聊的電影！", imageName: "h", star: 1),
-        Comment(comment: "男主角好帥！", imageName: "i", star: 5),
-        Comment(comment: "女主角好帥！", imageName: "j", star: 4),
-        Comment(comment: "有夠爛！", imageName: "k", star: 1),
+        Comment(comment: "很棒！", imageName: "a", star: 4, updatetime: "2021-03-10 14:17:44"),
+        Comment(comment: "爛透了！", imageName: "b", star: 1, updatetime: "2021-03-10 14:16:44"),
+        Comment(comment: "好看！", imageName: "c", star: 5, updatetime: "2021-03-10 14:15:44"),
+        Comment(comment: "讚！", imageName: "d", star: 4, updatetime: "2021-03-10 14:14:44"),
+        Comment(comment: "Good！", imageName: "e", star: 5, updatetime: "2021-03-10 14:13:44"),
+        Comment(comment: "難看！", imageName: "f", star: 1, updatetime: "2021-03-10 14:12:44"),
+        Comment(comment: "值得二刷！", imageName: "g", star: 4, updatetime: "2021-03-10 14:11:44"),
+        Comment(comment: "無聊的電影！", imageName: "h", star: 1, updatetime: "2021-03-09 14:18:44"),
+        Comment(comment: "男主角好帥！", imageName: "i", star: 5, updatetime: "2021-03-10 13:18:44"),
+        Comment(comment: "女主角好帥！", imageName: "j", star: 4, updatetime: "2021-03-10 12:18:44"),
+        Comment(comment: "有夠爛！", imageName: "k", star: 1, updatetime: "2021-03-10 11:14:44")
     ]
     
     override func viewDidLoad() {

@@ -11,4 +11,5 @@ struct Comment {
     var comment: String
     var imageName: String
     var star: Int
+    var updatetime: String
 }

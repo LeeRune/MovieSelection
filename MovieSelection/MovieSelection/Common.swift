@@ -10,4 +10,5 @@ let partnerKey = "partner_PX2M6nnd1DC3XmtABNbfmfBSgYzW209Wyvjz19Kcrnbzz4KbSRi7s8
 // 商家管理 (要選含有LINE PAY文字的)
 let merchantName = "TW_LINE_PAY"
 let merchantId = "Takeit_LINEPAY"
-
+let merchantNameForDirect = "TW_TAISHIN"
+let merchantIdForDirect = "Takeit_TAISHIN"

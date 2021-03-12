@@ -53,6 +53,7 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
     var seatRow: Int = 0
     var seatColumn: Int = 0
     var seatSelected: String = ""
+    var seatSelectedArray = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,7 +87,8 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
+        seatSelected = ""
+
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "seatCell", for: indexPath) as! seatCell
         if seatLayout[classTitle[indexPath.section]]![indexPath.row] == 0 {
             
@@ -100,6 +102,22 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
         }else{
             
             cell.seat.image = #imageLiteral(resourceName: "selected")
+        }
+        
+        //儲存已選位置
+        if seatLayout[classTitle[indexPath.section]]![indexPath.row] == 3{
+            
+            if(indexPath.row/10) > 0{
+                
+                seatRow = (indexPath.section + 1) + (indexPath.row / 10)
+                seatColumn = (indexPath.row % 10) + 1
+                self.seatSelectedArray.append("第\(seatRow)排\(seatColumn)號")
+            }else{
+                
+                seatRow = indexPath.section + 1
+                seatColumn = indexPath.row + 1
+                self.seatSelectedArray.append("第\(seatRow)排\(seatColumn)號")
+            }
         }
         
         return cell
@@ -144,19 +162,10 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
             }
             
             seatOrderLabel.text = String(seatCount)
+            seatSelectedArray.removeAll()
             seatCollectionView.reloadData()
         }
-        if(indexPath.row/10) > 0{
-            
-            seatRow = (indexPath.section + 1) + (indexPath.row / 10)
-            seatColumn = (indexPath.row % 10) + 1
-            seatSelected.append("第\(seatRow)排\(seatColumn)號\n")
-        }else{
-            
-            seatRow = indexPath.section + 1
-            seatColumn = indexPath.row + 1
-            seatSelected.append("第\(seatRow)排\(seatColumn)號\n")
-        }
+        
     }
     
     func showBottomView(){
@@ -247,7 +256,7 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
             addAdultButton.isEnabled = false
             addChildButton.isEnabled = false
             payButton.isEnabled = true
-            payButton.backgroundColor = UIColor.systemRed
+            payButton.backgroundColor = UIColor.systemGreen
         }
         
         minusAdultButton.isEnabled = true
@@ -283,7 +292,7 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
             addAdultButton.isEnabled = false
             addChildButton.isEnabled = false
             payButton.isEnabled = true
-            payButton.backgroundColor = UIColor.systemRed
+            payButton.backgroundColor = UIColor.green
         }
         
         minusChildButton.isEnabled = true
@@ -308,7 +317,10 @@ class SeatVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSour
     }
    
     @IBAction func payButton(_ sender: UIButton) {
-        
+        for i in 0...seatSelectedArray.count-1{
+            seatSelected.append("\(seatSelectedArray[i])\n")
+        }
+        print("\(seatSelected)")
         performSegue(withIdentifier: "OrderRulesSegue", sender: 0)
     }
     

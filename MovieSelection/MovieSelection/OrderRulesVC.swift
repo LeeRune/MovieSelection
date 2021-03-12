@@ -26,6 +26,13 @@ class OrderRulesVC: UIViewController {
     var timeSelection: String = ""
     var amount: String = ""
     var seatSelection: String = ""
+    var tpdCard : TPDCard!
+    var tpdForm : TPDForm!
+    var merchant : TPDMerchant!
+    var consumer : TPDConsumer!
+    var cart     : TPDCart!
+
+    
     
     override func viewDidLoad() {
         
@@ -35,7 +42,7 @@ class OrderRulesVC: UIViewController {
         //預設按鈕預設圖案及被選取圖案
         self.checkButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
         self.checkButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
-        
+
         loadData()
     }
     
@@ -50,25 +57,55 @@ class OrderRulesVC: UIViewController {
             
             self.checkButton.isSelected = true
             self.agreeButton.isEnabled = true
-            self.agreeButton.backgroundColor = UIColor.systemRed
+            self.agreeButton.backgroundColor = UIColor.systemGreen
         }
     }
     
     @IBAction func agreeButton(_ sender: Any) {
 
-        let alert = UIAlertController(title: "", message: "請選擇支付方式", preferredStyle: .actionSheet)
+        let ticketInfoAlert = UIAlertController(title: "訂票資訊", message: "電影名稱：\n\(movieName)\n影城：\n\(stationSelection)\n日期：\n\(dateSelection)\n場次：\n\(timeSelection)\n金額：\n\(amount)\n座位：\n\(seatSelection)", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "確認", style: .default) { ACTION in
+            self.showPay()
+        }
+        ticketInfoAlert.addAction(ok)
+        self.present(ticketInfoAlert, animated: true, completion: nil)
+        
+    }
+    
+    func showPay(){
+        let howToPayAlert = UIAlertController(title: "", message: "請選擇支付方式", preferredStyle: .actionSheet)
         let cancel = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let creditCard = UIAlertAction(title: "信用卡", style: .default, handler: {
             ACTION in
-            let alert = UIAlertController(title: "", message: "付款成功", preferredStyle: .alert)
-                    let ok = UIAlertAction(title: "確定", style: .default, handler: {
-                        ACTION in
-                        
-                        //跳回首頁
-                        self.navigationController?.popToRootViewController(animated: true)
-                    })
-                    alert.addAction(ok)
-                    self.present(alert, animated: true, completion: nil)
+            let creditview = UIView()
+            creditview.frame = CGRect(x: 15, y: 60, width: 260, height: 80)
+            self.tpdForm = TPDForm.setup(withContainer: creditview)
+            let creditAlert = UIAlertController(title: "", message: "請輸入信用卡資訊", preferredStyle: .alert)
+            let creditOk = UIAlertAction(title: "確定", style: .default) { ACTION in
+                self.tpdCard = TPDCard.setup(self.tpdForm)
+                self.tpdCard.onSuccessCallback { (prime, cardInfo, cardIdentifier, merchantReferenceInfo) in
+                        self.directGeneratePayByPrimeForSandBox(prime: prime!)
+                    }.onFailureCallback { (status, msg) in
+                        print("status : \(status), msg : \(msg)")
+                    }.getPrime()
+                let payOkAlert = UIAlertController(title: "", message: "付款成功", preferredStyle: .alert)
+                        let payOk = UIAlertAction(title: "確定", style: .default, handler: {
+                            ACTION in
+
+                            //跳回首頁
+                            self.navigationController?.popToRootViewController(animated: true)
+                        })
+                payOkAlert.addAction(payOk)
+                        self.present(payOkAlert, animated: true, completion: nil)
+            }
+            let creditCancel = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+            let height:NSLayoutConstraint = NSLayoutConstraint(item: creditAlert.view!, attribute: NSLayoutConstraint.Attribute.height, relatedBy: NSLayoutConstraint.Relation.equal, toItem: nil, attribute: NSLayoutConstraint.Attribute.notAnAttribute, multiplier: 1, constant: 200)
+            
+            creditAlert.view.addConstraint(height)
+            creditAlert.view.addSubview(creditview)
+            creditAlert.addAction(creditOk)
+            creditAlert.addAction(creditCancel)
+            self.present(creditAlert, animated: true, completion: nil)
         })
         let apple = UIAlertAction(title: "ApplePay", style: .default, handler: {
             ACTION in
@@ -93,7 +130,7 @@ class OrderRulesVC: UIViewController {
                 
                 // linePay呼叫getPrime()以取得prime，並從onSuccessCallback取得
                 self.linePay.onSuccessCallback { (prime) in
-                    self.generatePayByPrimeForSandBox(prime: prime!)
+                    self.lineGeneratePayByPrimeForSandBox(prime: prime!)
                 }.onFailureCallback { (status, msg) in
                     print("status : \(status), msg : \(msg)")
                 }.getPrime()
@@ -107,11 +144,11 @@ class OrderRulesVC: UIViewController {
             self.navigationController?.popToRootViewController(animated: true)
         })
         
-        alert.addAction(creditCard)
-        alert.addAction(apple)
-        alert.addAction(line)
-        alert.addAction(cancel)
-        self.present(alert, animated: true, completion: nil)
+        howToPayAlert.addAction(creditCard)
+        howToPayAlert.addAction(apple)
+        howToPayAlert.addAction(line)
+        howToPayAlert.addAction(cancel)
+        self.present(howToPayAlert, animated: true, completion: nil)
     }
     
     //讀取UserDefault資料
@@ -142,7 +179,7 @@ class OrderRulesVC: UIViewController {
         
     }
     
-    func generatePayByPrimeForSandBox(prime: String) {
+    func lineGeneratePayByPrimeForSandBox(prime: String) {
         let url_TapPay = URL(string: tapPaySanbox)
         var cardholderDic = [String: String]()
         cardholderDic["name"] = "Lee"
@@ -179,6 +216,39 @@ class OrderRulesVC: UIViewController {
                     }
                     
                     
+                    let text = String(data: data!, encoding: .utf8)!
+                    print("\n----------Success--------------")
+                    print(text)
+                }
+            }
+        }
+    }
+    
+    func directGeneratePayByPrimeForSandBox(prime: String) {
+        let url_TapPay = URL(string: tapPaySanbox)
+        var cardholderDic = [String: String]()
+        cardholderDic["name"] = "Lee"
+        cardholderDic["phone_number"] = "+886912345678"
+        cardholderDic["email"] = "lee@email.com"
+        
+        var resultUrlDic = [String: String]()
+        resultUrlDic["frontend_redirect_url"] = self.frontend_rediret_url
+        resultUrlDic["backend_notify_url"] = self.backend_notify_url
+        
+        var paymentDic = [String: Any]()
+        paymentDic["partner_key"] = partnerKey
+        paymentDic["prime"] = prime
+        paymentDic["merchant_id"] = merchantIdForDirect
+        paymentDic["amount"] = amount
+        paymentDic["currency"] = "TWD"
+        paymentDic["order_number"] = "SN0001"
+        paymentDic["details"] = "電影名稱：\n\(movieName)\n影城：\n\(stationSelection)\n日期：\n\(dateSelection)\n場次：\n\(timeSelection)\n座位：\(seatSelection)"
+        paymentDic["cardholder"] = cardholderDic
+        paymentDic["result_url"] = resultUrlDic
+        
+        executeTask(url_TapPay!, paymentDic) { (data, response, error) in
+            if error == nil {
+                if data != nil {
                     let text = String(data: data!, encoding: .utf8)!
                     print("\n----------Success--------------")
                     print(text)
